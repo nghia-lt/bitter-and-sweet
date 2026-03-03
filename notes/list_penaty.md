@@ -1,0 +1,72 @@
+- 1/8 quả chanh
+- 1/8 quả chanh
+- 1/8 quả chanh
+- 1/4 quả chanh
+- 1/4 quả chanh
+- 1/2 quả chanh
+- 1 lát gừng
+- 1 lát gừng
+- 1 lát gừng
+- 2 lát gừng
+- 2 lát gừng
+- 3 lát gừng
+- 1 lát ớt
+- 1 lát ớt
+- 1 lát ớt
+- 2 lát ớt
+- 1 lát tỏi
+- 1 lát tỏi
+- 2 lát tỏi
+- 1 miếng mướp đắng
+- 1 miếng mướp đắng
+- 1 miếng mướp đắng
+- 2 miếng mướp đắng
+- 2 miếng mướp đắng
+- 3 miếng mướp đắng
+- mix 2 loại ở trên
+- mix 2 loại ở trên
+- mix 3 loại ở trên
+- tét tay 1 cái
+- tét tay 1 cái
+- tét tay 1 cái
+- tét tay 2 cái
+- tét tay 2 cái
+- tét tay 2 cái
+- tét tay 3 cái
+- tét tay 3 cái
+- tét tay 5 cái
+- tét đùi 1 cái
+- tét đùi 1 cái
+- tét đùi 1 cái
+- tét đùi 2 cái
+- tét đùi 2 cái
+- búng tai 1 cái
+- búng tai 1 cái
+- búng tai 1 cái
+- búng tai 2 cái
+- búng tai 2 cái
+- búng tai 3 cái
+- squat 10 cái
+- squat 10 cái
+- squat 10 cái
+- squat 20 cái
+- squat 20 cái
+- squat 30 cái
+- plank 45s
+- plank 45s
+- plank 45s
+- plank 60s
+- plank 60s
+- plank 75s
+- đứng 1 chân 60s
+- đứng 1 chân 60s
+- đứng 1 chân 60s
+- đứng 1 chân 90s
+- đứng 1 chân 90s
+- đứng 1 chân 120s
+- đăng story "tự luyến" 24h
+- đăng story "tự luyến" 24h
+- đăng story "tự luyến" 48h
+- đăng story "tự luyến" 72h
+- hôn tay(người thua sẽ quay để chọn người may mắn được nhận một nụ hôn vào tay)(không áp dụng cho trường hợp Nghĩa, Yến Nhi - ví dụ Yên Nhi thua thì không có Nghĩa trong danh sách người may mắn được chọn)
+- hôn má(người thua sẽ quay để chọn người may mắn được nhận một nụ hôn vào má)(không áp dụng cho trường hợp Nghĩa, Yến Nhi - ví dụ Yên Nhi thua thì không có Nghĩa trong danh sách người may mắn được chọn)
