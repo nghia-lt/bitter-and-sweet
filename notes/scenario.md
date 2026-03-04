@@ -226,6 +226,20 @@ Người chơi (hoặc chính nạn nhân) bấm nút **QUAY!** ở giữa vòng
 
 Vòng quay bắt đầu xoay nhanh → chậm dần → dừng lại kèm hiệu ứng rung nhẹ. Kim chỉ dừng ở một ô.
 
+#### 🤫 Chế Độ Bí Mật (Secret Mode)
+
+Ở góc trên phải màn hình có một **toggle "🤫 BÍ MẬT"**. Khi bật:
+
+- **Trước khi quay:** Tất cả hình phạt trên vòng quay hiển thị **"❓❓❓"** thay vì tên thật — không ai biết ô nào là gì.
+- **Đang quay:** Focus card bên dưới cũng hiện **"??? ĐANG QUAY... ???"** — không spoil kết quả.
+- **Sau khi dừng:** Kết quả hiện dạng **lá bài úp** với text **"🔮 CHẠM ĐỂ LẬT"** — tạo suspense tối đa.
+- **Khi người chơi chạm:** Card **flip animation 180°** như lật bài → hiện hình phạt thật kèm **hiệu ứng nổ tung** (confetti, glow burst).
+- Nếu hình phạt là **Đôi** → sau khi lật, vòng quay chọn người cũng hiển thị dạng bí mật → lật lần 2 để lộ tên.
+
+Khi **tắt** (mặc định): Hoạt động bình thường — nhìn thấy hết hình phạt như trước.
+
+> _💡 Tính năng này giúp tăng suspense gấp nhiều lần — khoảnh khắc lật bài trở thành highlight của mỗi lượt chơi!_
+
 ---
 
 #### 🅰️ Trường Hợp A: Trúng Hình Phạt Đơn
