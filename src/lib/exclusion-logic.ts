@@ -6,10 +6,11 @@ import type { Penalty, Player, ExclusionRule } from "./types";
  */
 export function checkExclusion(
     penalty: Penalty,
-    victim: Player,
+    victim: Player | undefined,
     partner: Player,
     rules: ExclusionRule[],
 ): boolean {
+    if (!victim) return false;
     return rules.some((rule) => {
         // Rule applies to this penalty?
         const penaltyMatches = rule.penaltyIds.includes(penalty.id);
@@ -29,10 +30,11 @@ export function checkExclusion(
  */
 export function getEligiblePartners(
     penalty: Penalty,
-    victim: Player,
+    victim: Player | undefined,
     allPlayers: Player[],
     rules: ExclusionRule[],
 ): Player[] {
+    if (!victim) return allPlayers;
     return allPlayers.filter(
         (player) =>
             player.id !== victim.id &&
