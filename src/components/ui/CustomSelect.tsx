@@ -40,13 +40,13 @@ export function CustomSelect({ value, options, onChange, placeholder }: CustomSe
     setOpen(v => !v);
   };
 
-  // Close on outside click
+  // Close on outside click — must exclude BOTH the trigger and the portal dropdown
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (triggerRef.current && !triggerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+      const inTrigger = triggerRef.current?.contains(e.target as Node);
+      const inDropdown = dropdownRef.current?.contains(e.target as Node);
+      if (!inTrigger && !inDropdown) setOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -74,7 +74,6 @@ export function CustomSelect({ value, options, onChange, placeholder }: CustomSe
         <button
           key={opt.value}
           type="button"
-          onMouseDown={e => e.preventDefault()} // prevent blur before click
           onClick={() => { onChange(opt.value); setOpen(false); }}
           className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs transition hover:bg-white/10"
           style={{

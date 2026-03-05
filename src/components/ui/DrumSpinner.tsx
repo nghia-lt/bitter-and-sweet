@@ -35,8 +35,8 @@ import { useState, useRef, useEffect, useCallback, ReactNode, useMemo } from 're
  */
 
 // ── Constants ─────────────────────────────────────────────────
-const ITEM_H = 80;
-const VISIBLE = 5;
+const ITEM_H = 66;           // slightly smaller so 7 items fit on mobile
+const VISIBLE = 7;             // 3 dim + 1 focus + 3 dim
 const EXTRA_LOOPS = 5;
 const MIN_DURATION = 3.5;
 const MAX_DURATION = 5.0;
@@ -189,8 +189,8 @@ export function DrumSpinner<T>({
       <div
         className="absolute inset-0 overflow-hidden"
         style={{
-          maskImage: 'linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)',
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 80%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 80%, transparent 100%)',
         }}
       >
         <div
@@ -234,11 +234,11 @@ export function DrumSpinner<T>({
         </div>
       </div>
 
-      {/* Layer 2: FOCUS OVERLAY (static, never moves) */}
+      {/* Layer 2: FOCUS OVERLAY (static, never moves) — 1.3× taller for emphasis */}
       {!spinning && renderFocusOverlay && focusedItem && (
         <div
           className="absolute left-0 right-0 pointer-events-none z-10"
-          style={{ top: topPad, height: ITEM_H }}
+          style={{ top: topPad - ITEM_H * 0.15, height: ITEM_H * 1.3 }}
         >
           {renderFocusOverlay(focusedItem, focusedOrigIdx)}
         </div>
@@ -249,8 +249,8 @@ export function DrumSpinner<T>({
         <div
           className="absolute left-0 right-0 pointer-events-none z-10"
           style={{
-            top: topPad - 2,
-            height: ITEM_H + 4,
+            top: topPad - ITEM_H * 0.15 - 2,
+            height: ITEM_H * 1.3 + 4,
             borderRadius: 16,
             border: '1.5px solid rgba(168,85,247,0.5)',
             boxShadow: '0 0 20px rgba(168,85,247,0.35), inset 0 0 14px rgba(168,85,247,0.1)',
@@ -263,8 +263,8 @@ export function DrumSpinner<T>({
         <div
           className="absolute left-0 right-0 pointer-events-none z-10 animate-pulse"
           style={{
-            top: topPad - 2,
-            height: ITEM_H + 4,
+            top: topPad - ITEM_H * 0.15 - 2,
+            height: ITEM_H * 1.3 + 4,
             borderRadius: 16,
             border: '1.5px solid rgba(168,85,247,0.3)',
             boxShadow: '0 0 14px rgba(168,85,247,0.2)',

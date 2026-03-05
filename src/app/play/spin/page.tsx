@@ -12,20 +12,20 @@ type SpinPhase = 'idle' | 'spinning' | 'result_single' | 'result_pair_select' | 
 // ── Uniform row renderer (scrolling list) ─────────────────────
 function PenaltyRow(p: Penalty, _isFocus: boolean, _isAdj: boolean, idx: number) {
   return (
-    <div className="flex items-center gap-3 px-5 h-full">
+    // [CHANGED] justify-center + text-center for centered alignment
+    <div className="flex items-center justify-center gap-3 px-5 h-full w-full text-center">
       <span className="text-2xl">{p.icon}</span>
-      <span className="text-white font-semibold text-sm truncate flex-1">{p.name}</span>
-      <span className="text-xs text-gray-600">#{String(idx + 1).padStart(2, '0')}</span>
+      <span className="text-white font-semibold text-sm">{p.name}</span>
     </div>
   );
 }
 
 function SecretRow(_p: Penalty, _isFocus: boolean, _isAdj: boolean, idx: number) {
   return (
-    <div className="flex items-center gap-3 px-5 h-full">
+    // [CHANGED] justify-center for centered lock icon
+    <div className="flex items-center justify-center gap-3 px-5 h-full w-full">
       <span className="text-2xl">🔒</span>
       <span className="text-gray-500 font-semibold text-sm">• • •</span>
-      <span className="text-xs text-gray-700">#{String(idx + 1).padStart(2, '0')}</span>
     </div>
   );
 }
@@ -34,37 +34,26 @@ function SecretRow(_p: Penalty, _isFocus: boolean, _isAdj: boolean, idx: number)
 function FocusOverlay(penalty: Penalty | null, idx: number, secretMode: boolean) {
   if (!penalty) return null;
   return (
-    <div className="h-full mx-1 rounded-2xl overflow-hidden relative pointer-events-none"
+    <div className="h-full mx-1 rounded-2xl overflow-hidden relative pointer-events-none flex flex-col items-center justify-center"
       style={{
         background: 'linear-gradient(135deg, #1E0A3C, #0D0D2B)',
         border: '1.5px solid #A855F7',
         boxShadow: '0 0 22px rgba(168,85,247,0.55), 0 0 8px rgba(236,72,153,0.3)',
-        padding: '8px 16px',
+        padding: '0 16px',
       }}>
       {/* Shimmer */}
       <div className="absolute inset-0 pointer-events-none"
         style={{ background: 'linear-gradient(105deg,transparent 40%,rgba(168,85,247,0.07) 50%,transparent 60%)', animation: 'shimmer 3s infinite' }} />
-      {/* Top row */}
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-black tracking-widest uppercase px-2 py-0.5 rounded-full"
-          style={{ background: 'rgba(168,85,247,0.2)', color: '#C084FC' }}>
-          ⚡ TIÊU ĐIỂM
-        </span>
-        <span className="text-cyan-400 text-sm font-bold">✪</span>
-      </div>
-      {/* Content */}
-      <div className="flex items-center gap-3">
+      {/* Content: arrows at edges, icon+text centered */}
+      <div className="flex items-center justify-between w-full">
         <span className="text-purple-400 text-lg font-bold select-none">◀</span>
-        <span className="text-2xl">{secretMode ? '❓' : penalty.icon}</span>
-        <p className="flex-1 text-white font-black text-lg leading-snug">
-          {secretMode ? 'BÍ MẬT ???' : penalty.name.toUpperCase()}
-        </p>
+        <div className="flex items-center gap-2 justify-center flex-1">
+          <span className="text-2xl">{secretMode ? '❓' : penalty.icon}</span>
+          <p className="text-white font-black text-lg leading-snug text-center">
+            {secretMode ? 'BÍ MẬT ???' : penalty.name.toUpperCase()}
+          </p>
+        </div>
         <span className="text-purple-400 text-lg font-bold select-none">▶</span>
-      </div>
-      {/* Dots */}
-      <div className="flex items-center gap-1 mt-1">
-        <div className="h-1 w-5 rounded-full bg-purple-500" />
-        {[1,2,3,4].map(i => <div key={i} className="h-1 w-1 rounded-full bg-gray-600" />)}
       </div>
     </div>
   );
@@ -133,7 +122,9 @@ export default function SpinPage() {
   /* ── Shuffle ── */
   const handleShuffle = () => {
     if (phase === 'spinning') return;
-    const arr = [...list];
+    // [CHANGED] Always shuffle activePenalties directly – not `list` (which may be secret-masked)
+    // so shuffle works regardless of secretMode state
+    const arr = [...activePenalties];
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -204,10 +195,8 @@ export default function SpinPage() {
             VÒNG QUAY HÌNH PHẠT
           </p>
         </div>
-        <button className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <span className="text-gray-400 text-sm">⚙️</span>
-        </button>
+        {/* [CHANGED] Removed ⚙️ settings button — replaced with spacer to keep header balanced */}
+        <div className="w-10 h-10 shrink-0" />
       </div>
 
       {/* Victim */}

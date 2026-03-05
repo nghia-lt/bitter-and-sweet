@@ -40,33 +40,24 @@ function FateRow(fate: FateType, _isFocus: boolean, _isAdj: boolean, _idx: numbe
 function FateFocusOverlay(fate: FateType | null, idx: number) {
   if (!fate) return null;
   const m = FATE_META[fate];
-  const cfg = FATE_CONFIG[fate];
   return (
-    <div className="h-full mx-1 rounded-2xl overflow-hidden relative pointer-events-none"
+    <div className="h-full mx-1 rounded-2xl overflow-hidden relative pointer-events-none flex flex-col items-center justify-center"
       style={{
         background: `linear-gradient(135deg, rgba(15,15,26,0.95), rgba(13,13,43,0.95))`,
         border: `1.5px solid ${m.textColor}80`,
         boxShadow: `0 0 20px ${m.glow}, 0 0 6px ${m.glow}`,
-        padding: '8px 16px',
+        padding: '0 16px',
       }}>
       <div className="absolute inset-0 pointer-events-none"
         style={{ background: `linear-gradient(105deg,transparent 40%,${m.glow}20 50%,transparent 60%)`, animation: 'shimmer 3s infinite' }} />
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-black tracking-widest uppercase px-2 py-0.5 rounded-full"
-          style={{ background: `${m.textColor}22`, color: m.textColor }}>
-          ⚡ TIÊU ĐIỂM
-        </span>
-        <span style={{ color: m.textColor }} className="text-sm">✪</span>
-      </div>
-      <div className="flex items-center gap-3">
+      {/* Content: arrows at edges, icon+text centered */}
+      <div className="flex items-center justify-between w-full">
         <span style={{ color: m.textColor }} className="text-lg font-bold select-none">◀</span>
-        <span className="text-3xl">{m.icon}</span>
-        <p className="flex-1 font-black text-xl leading-snug" style={{ color: m.textColor }}>{m.label}</p>
+        <div className="flex items-center gap-2 justify-center flex-1">
+          <span className="text-3xl">{m.icon}</span>
+          <p className="font-black text-xl leading-snug text-center" style={{ color: m.textColor }}>{m.label}</p>
+        </div>
         <span style={{ color: m.textColor }} className="text-lg font-bold select-none">▶</span>
-      </div>
-      <div className="flex items-center gap-1 mt-1">
-        <div className="h-1 w-5 rounded-full" style={{ background: m.textColor }} />
-        {[1,2,3,4].map(i => <div key={i} className="h-1 w-1 rounded-full bg-gray-700" />)}
       </div>
     </div>
   );
