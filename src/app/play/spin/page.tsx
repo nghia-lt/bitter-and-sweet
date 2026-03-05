@@ -7,7 +7,7 @@ import { weightedRandom, filterFoodPenalties, getActivePenalties } from '@/lib/w
 import { getEligiblePartners } from '@/lib/exclusion-logic';
 import type { Penalty, Player, PenaltyResult } from '@/lib/types';
 
-type SpinPhase = 'idle' | 'spinning' | 'result_single' | 'result_pair_select' | 'result_pair_done' | 'result_mix';
+type SpinPhase = 'idle' | 'spinning' | 'result_secret' | 'result_single' | 'result_pair_select' | 'result_pair_done' | 'result_mix';
 
 // ── Uniform row renderer (scrolling list) ─────────────────────
 function PenaltyRow(p: Penalty, _isFocus: boolean, _isAdj: boolean, idx: number) {
@@ -75,7 +75,8 @@ export default function SpinPage() {
   const [mixLeft, setMixLeft] = useState(0);
   const [mixBusy, setMixBusy] = useState(false);
   const [secretReveal, setSecretReveal] = useState(false);
-  const [flipping, setFlipping] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [flipAnim, setFlipAnim] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const secretMode = gameState.secretMode;
@@ -97,18 +98,18 @@ export default function SpinPage() {
 
     setPhase('spinning');
     setSecretReveal(false);
-    setFlipping(false);
+    setIsRevealed(false);
+    setFlipAnim(false);
     setResultPenalty(result);
 
     spin(landIdx);
   }, [phase, list, spin]);
 
-  /* Called by DrumSpinner transitionend → state reset */
   const handleSpinEnd = useCallback((_item: Penalty, _index: number) => {
-    // resultPenalty was set before spin started
     const result = resultPenalty;
     if (!result) { setPhase('idle'); return; }
-
+    // Secret mode: gate at result_secret — reveal button shows before real phase
+    if (secretMode) { setPhase('result_secret'); return; }
     if (result.isMix && result.mixCount) {
       setMixResults([]); setMixLeft(result.mixCount);
       setPhase('result_mix');
@@ -117,7 +118,7 @@ export default function SpinPage() {
     } else {
       setPhase('result_single');
     }
-  }, [resultPenalty]);
+  }, [resultPenalty, secretMode]);
 
   /* ── Shuffle ── */
   const handleShuffle = () => {
@@ -156,7 +157,23 @@ export default function SpinPage() {
     updateState({ currentPenalties: [{ penalty: resultPenalty!, partnerId: p.id, partnerName: p.name }] });
   };
 
-  const handleReveal = () => { setFlipping(true); setTimeout(() => setSecretReveal(true), 380); };
+  const handleReveal = () => {
+    setFlipAnim(true); // start card-flip
+    setTimeout(() => {
+      setIsRevealed(true);
+      setSecretReveal(true);
+      const result = resultPenalty;
+      if (!result) return;
+      if (result.isMix && result.mixCount) {
+        setMixResults([]); setMixLeft(result.mixCount); setPhase('result_mix');
+      } else if (result.requiresPartner) {
+        setPhase('result_pair_select');
+      } else {
+        setPhase('result_single');
+      }
+      setTimeout(() => setFlipAnim(false), 250);
+    }, 220);
+  };
 
   const handleNext = () => {
     updateState({
@@ -171,7 +188,7 @@ export default function SpinPage() {
   const eligible = resultPenalty ? getEligiblePartners(resultPenalty, victim, gameState.members, gameState.exclusionRules) : [];
   const showResult = phase === 'result_single' || phase === 'result_pair_done';
   const showNext = showResult || (phase === 'result_mix' && mixLeft === 0);
-  const isSecret = secretMode && (phase === 'idle' || phase === 'spinning');
+  const isSecret = secretMode && (phase === 'idle' || phase === 'spinning' || phase === 'result_secret');
 
   return (
     <main className="flex flex-col min-h-screen overflow-hidden"
@@ -231,14 +248,15 @@ export default function SpinPage() {
               <div onClick={handleReveal}
                 className="rounded-2xl border border-purple-500 p-6 text-center cursor-pointer select-none"
                 style={{ background: 'linear-gradient(135deg,#1a0533,#0d1a33)', boxShadow: '0 0 28px rgba(168,85,247,0.5)',
-                  transform: flipping ? 'rotateY(90deg)' : 'rotateY(0deg)', transition: 'transform 0.38s ease' }}>
+                  transform: flipAnim ? 'rotateY(90deg)' : 'rotateY(0deg)', transition: 'transform 0.22s ease' }}>
                 <div className="text-3xl mb-3 space-x-1">🔮 🔮 🔮</div>
                 <p className="text-white font-black text-xl tracking-wide">CHẠM ĐỂ LẬT</p>
                 <p className="text-purple-300 text-2xl mt-2 animate-pulse">❓❓❓</p>
               </div>
             ) : (
               <div className="rounded-2xl border p-5 text-center"
-                style={{ background: 'linear-gradient(135deg,#1a0533,#0A0A1A)', borderColor: '#A855F780', boxShadow: '0 0 25px rgba(168,85,247,0.4)' }}>
+                style={{ background: 'linear-gradient(135deg,#1a0533,#0A0A1A)', borderColor: '#A855F780', boxShadow: '0 0 25px rgba(168,85,247,0.4)',
+                  transform: flipAnim ? 'rotateY(90deg)' : 'rotateY(0deg)', transition: 'transform 0.22s ease' }}>
                 <div className="text-5xl mb-2">{resultPenalty.icon}</div>
                 <p className="text-2xl font-black text-white mb-1">{resultPenalty.name.toUpperCase()}!</p>
                 {partner
@@ -324,10 +342,24 @@ export default function SpinPage() {
             </button>
           </div>
         )}
+
+        {/* Pulsing reveal button — only during result_secret phase */}
+        {phase === 'result_secret' && (
+          <button
+            onClick={handleReveal}
+            className="w-full py-4 rounded-full font-black text-white text-base active:scale-95 transition"
+            style={{
+              background: 'linear-gradient(135deg, #B91C1C, #EA580C)',
+              boxShadow: '0 0 32px rgba(239,68,68,0.7)',
+              animation: 'pulse 1s cubic-bezier(0.4,0,0.6,1) infinite',
+            }}>
+            👀 MỞ KẾT QUẢ
+          </button>
+        )}
+
         {showNext && (
           <button onClick={handleNext}
-            disabled={secretMode && !secretReveal && phase !== 'result_mix'}
-            className="w-full py-4 rounded-full font-black text-white text-base disabled:opacity-40 active:scale-95 transition"
+            className="w-full py-4 rounded-full font-black text-white text-base active:scale-95 transition"
             style={{ background: 'linear-gradient(135deg,#7C3AED,#EC4899)', boxShadow: '0 4px 20px rgba(168,85,247,0.4)' }}>
             ĐẾN VÒNG CƠ HỘI ➡️
           </button>
