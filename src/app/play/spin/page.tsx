@@ -76,7 +76,7 @@ export default function SpinPage() {
   const { gameState, updateState } = useGameState();
 
   const victim = gameState.members.find(m => m.id === gameState.currentVictimId);
-  const activePenalties = getActivePenalties(gameState.selectedPenalties);
+  const activePenalties = getActivePenalties(gameState.selectedPenalties, gameState.penaltySlots ?? {});
 
   const [shuffledList, setShuffledList] = useState<Penalty[]>([]);
   const [phase, setPhase] = useState<SpinPhase>('idle');

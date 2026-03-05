@@ -88,6 +88,7 @@ export interface GameState {
     members: Player[];
     selectedIngredients: IngredientId[];
     selectedPenalties: string[]; // penalty IDs
+    penaltySlots: Record<string, number>; // custom slot overrides per penalty ID
     exclusionRules: ExclusionRule[];
     currentVictimId: string | null;
     currentPenalties: PenaltyResult[];

@@ -43,9 +43,20 @@ export function filterFoodPenalties(penaltyIds: string[]): Penalty[] {
 
 /**
  * Get all active penalties from selected IDs.
+ * Applies user's custom slot overrides if provided.
  */
-export function getActivePenalties(penaltyIds: string[]): Penalty[] {
-    return DEFAULT_PENALTIES.filter((p) => penaltyIds.includes(p.id));
+export function getActivePenalties(
+    penaltyIds: string[],
+    customSlots?: Record<string, number>,
+): Penalty[] {
+    return DEFAULT_PENALTIES.filter((p) => penaltyIds.includes(p.id)).map(
+        (p) => {
+            if (customSlots && customSlots[p.id] !== undefined) {
+                return { ...p, slots: customSlots[p.id] };
+            }
+            return p;
+        },
+    );
 }
 
 /**

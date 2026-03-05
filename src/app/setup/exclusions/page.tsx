@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { X, Plus } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { Button } from '@/components/ui/Button';
+import { CustomSelect } from '@/components/ui/CustomSelect';
 import { useGameState } from '@/hooks/useGameState';
 import { DEFAULT_PENALTIES } from '@/lib/constants';
 import type { ExclusionRule } from '@/lib/types';
@@ -45,6 +46,10 @@ export default function ExclusionsPage() {
     setTimeout(() => router.push('/play/select'), 2000);
   };
 
+  // Options for custom selects
+  const penaltyOptions = pairPenalties.map(p => ({ value: p.id, label: p.name, icon: p.icon }));
+  const memberOptions = gameState.members.map(m => ({ value: m.id, label: m.name, icon: m.emoji }));
+
   if (showTransition) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-dark-bg z-50">
@@ -83,41 +88,29 @@ export default function ExclusionsPage() {
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2">
                 <span className="text-gray-400 min-w-fit">Hình phạt:</span>
-                <select
-                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-white text-xs"
+                <CustomSelect
                   value={rule.penaltyIds[0] || ''}
-                  onChange={e => updateRule(rule.id, { penaltyIds: [e.target.value] })}
-                >
-                  {pairPenalties.map(p => (
-                    <option key={p.id} value={p.id}>{p.icon} {p.name}</option>
-                  ))}
-                </select>
+                  options={penaltyOptions}
+                  onChange={v => updateRule(rule.id, { penaltyIds: [v] })}
+                />
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="text-gray-400 min-w-fit">Người 1:</span>
-                <select
-                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-white text-xs"
+                <CustomSelect
                   value={rule.player1Id}
-                  onChange={e => updateRule(rule.id, { player1Id: e.target.value })}
-                >
-                  {gameState.members.map(m => (
-                    <option key={m.id} value={m.id}>{m.emoji} {m.name}</option>
-                  ))}
-                </select>
+                  options={memberOptions}
+                  onChange={v => updateRule(rule.id, { player1Id: v })}
+                />
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="text-gray-400 min-w-fit">Người 2:</span>
-                <select
-                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-white text-xs"
+                <CustomSelect
                   value={rule.player2Id}
-                  onChange={e => updateRule(rule.id, { player2Id: e.target.value })}
-                >
-                  {gameState.members.filter(m => m.id !== rule.player1Id).map(m => (
-                    <option key={m.id} value={m.id}>{m.emoji} {m.name}</option>
-                  ))}
-                </select>
+                  options={memberOptions.filter(m => m.value !== rule.player1Id)}
+                  onChange={v => updateRule(rule.id, { player2Id: v })}
+                />
               </div>
             </div>
           </div>

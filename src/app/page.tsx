@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGameState } from '@/hooks/useGameState';
 import { Button } from '@/components/ui/Button';
@@ -6,7 +7,11 @@ import { Button } from '@/components/ui/Button';
 export default function WelcomePage() {
   const router = useRouter();
   const { hasExistingData, resetGame } = useGameState();
-  const existingData = hasExistingData();
+  const [existingData, setExistingData] = useState(false);
+
+  useEffect(() => {
+    setExistingData(hasExistingData());
+  }, []);
 
   const handleNewGame = () => router.push('/setup/members');
   const handleHistory = () => router.push('/history');
@@ -41,7 +46,7 @@ export default function WelcomePage() {
       {/* CTA Buttons */}
       <div className="relative z-10 flex flex-col gap-4 w-full max-w-xs">
         <Button variant="primary" size="lg" fullWidth onClick={handleNewGame}>
-          🎮 Bắt Đầu Phiên Mới
+          🎮 Bắt Đầu
         </Button>
         <Button variant="secondary" size="lg" fullWidth onClick={handleHistory}>
           📖 Xem Lịch Sử

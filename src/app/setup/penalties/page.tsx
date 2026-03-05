@@ -10,6 +10,18 @@ export default function PenaltiesPage() {
   const router = useRouter();
   const { gameState, updateState } = useGameState();
 
+  const getSlots = (penaltyId: string, defaultSlots: number): number => {
+    return (gameState.penaltySlots ?? {})[penaltyId] ?? defaultSlots;
+  };
+
+  const changeSlots = (penaltyId: string, defaultSlots: number, delta: number) => {
+    const current = getSlots(penaltyId, defaultSlots);
+    const next = Math.max(0, Math.min(5, current + delta));
+    updateState({
+      penaltySlots: { ...(gameState.penaltySlots ?? {}), [penaltyId]: next },
+    });
+  };
+
   const toggleIngredient = (id: IngredientId) => {
     const current = gameState.selectedIngredients;
     updateState({
@@ -46,7 +58,7 @@ export default function PenaltiesPage() {
       <div className="flex-1 px-4 py-6 space-y-6 overflow-y-auto pb-32">
         <div className="text-center">
           <h2 className="text-2xl font-black text-white">🍹 Chọn Nguyên Liệu</h2>
-          <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">& Hình Phạt</h2>
+          <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">&amp; Hình Phạt</h2>
         </div>
 
         {/* Ingredient toggles */}
@@ -83,24 +95,57 @@ export default function PenaltiesPage() {
                 {groupPenalties.map(penalty => {
                   const enabled = isPenaltyEnabled(penalty.id);
                   const selected = gameState.selectedPenalties.includes(penalty.id);
+                  const slots = getSlots(penalty.id, penalty.slots);
                   return (
-                    <label
+                    <div
                       key={penalty.id}
-                      className={`flex items-center gap-3 cursor-pointer ${!enabled ? 'opacity-30' : ''}`}
+                      className={`flex items-center gap-3 ${!enabled ? 'opacity-30' : ''}`}
                     >
+                      {/* Checkbox */}
                       <input
                         type="checkbox"
                         checked={selected && enabled}
                         disabled={!enabled}
                         onChange={() => togglePenalty(penalty.id)}
-                        className="accent-purple-500 w-4 h-4"
+                        className="accent-purple-500 w-4 h-4 shrink-0"
                       />
-                      <span className="text-lg">{penalty.icon}</span>
-                      <span className="flex-1 text-sm text-gray-200">{penalty.name}</span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-purple-900/40 text-purple-400">
-                        ×{penalty.slots}
-                      </span>
-                    </label>
+                      <span className="text-lg shrink-0">{penalty.icon}</span>
+                      <span className="flex-1 text-sm text-gray-200 min-w-0">{penalty.name}</span>
+
+                      {/* Slot stepper: − ×N + */}
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={() => changeSlots(penalty.id, penalty.slots, -1)}
+                          disabled={!enabled || slots <= 0}
+                          className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black transition active:scale-90 disabled:opacity-30"
+                          style={{
+                            background: 'rgba(168,85,247,0.15)',
+                            border: '1px solid rgba(168,85,247,0.35)',
+                            color: '#C084FC',
+                          }}
+                        >
+                          −
+                        </button>
+                        <span
+                          className="text-xs font-black w-7 text-center tabular-nums"
+                          style={{ color: slots === 0 ? '#4B5563' : '#C084FC' }}
+                        >
+                          ×{slots}
+                        </span>
+                        <button
+                          onClick={() => changeSlots(penalty.id, penalty.slots, +1)}
+                          disabled={!enabled || slots >= 5}
+                          className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black transition active:scale-90 disabled:opacity-30"
+                          style={{
+                            background: 'rgba(168,85,247,0.15)',
+                            border: '1px solid rgba(168,85,247,0.35)',
+                            color: '#C084FC',
+                          }}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
