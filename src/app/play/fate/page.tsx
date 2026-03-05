@@ -28,10 +28,10 @@ function buildShuffledPool(): FateType[] {
 function FateRow(fate: FateType, _isFocus: boolean, _isAdj: boolean, _idx: number) {
   const m = FATE_META[fate];
   return (
-    <div className="flex items-center gap-3 px-5 h-full">
+    <div className="relative flex items-center justify-center gap-3 px-5 h-full w-full text-center">
       <span className="text-2xl">{m.icon}</span>
       <span className="text-white font-semibold text-sm">{m.label}</span>
-      <span className="text-xs text-gray-600 ml-auto">{FATE_CONFIG[fate].probability}%</span>
+      <span className="absolute right-5 text-xs text-gray-600">{FATE_CONFIG[fate].probability}%</span>
     </div>
   );
 }
@@ -72,25 +72,40 @@ export default function FatePage() {
   const otherPlayers = gameState.members.filter(m => m.id !== gameState.currentVictimId);
 
   const [pool, setPool] = useState<FateType[]>([]);
+  const [shuffledPool, setShuffledPool] = useState<FateType[]>([]);
   const [phase, setPhase] = useState<'idle' | 'spinning' | 'result'>('idle');
   const [result, setResult] = useState<FateType | null>(null);
   const [mounted, setMounted] = useState(false);
 
   const { spinRef, spin } = useDrumSpin();
 
-  useEffect(() => { setMounted(true); setPool(buildShuffledPool()); }, []);
+  useEffect(() => {
+    const initial = buildShuffledPool();
+    setPool(initial);
+    setShuffledPool(initial);
+    setMounted(true);
+  }, []);
+
+  const activePool = shuffledPool.length > 0 ? shuffledPool : pool;
 
   const handleSpin = useCallback(() => {
-    if (phase === 'spinning' || pool.length === 0) return;
-    const landFate = pool[Math.floor(Math.random() * pool.length)];
-    const candidates = pool.map((f, i) => f === landFate ? i : -1).filter(i => i >= 0);
+    if (phase === 'spinning' || activePool.length === 0) return;
+    const landFate = activePool[Math.floor(Math.random() * activePool.length)];
+    const candidates = activePool.map((f, i) => f === landFate ? i : -1).filter(i => i >= 0);
     const landIdx = candidates[Math.floor(Math.random() * candidates.length)];
     setPhase('spinning');
     setResult(landFate);
     spin(landIdx);
-  }, [phase, pool, spin]);
+  }, [phase, activePool, spin]);
 
   const handleSpinEnd = useCallback(() => { setPhase('result'); }, []);
+
+  const handleShuffle = () => {
+    if (phase === 'spinning') return;
+    setShuffledPool(buildShuffledPool());
+    setPhase('idle');
+    setResult(null);
+  };
 
   const handleCoVictim = (p: Player) => { updateState({ currentPenalties: gameState.currentPenalties }); router.push('/result'); };
   const handleNewVictim = (p: Player) => { updateState({ currentVictimId: p.id }); router.push('/result'); };
@@ -132,9 +147,9 @@ export default function FatePage() {
 
       {/* Drum */}
       <div className="flex-1 flex flex-col justify-center overflow-hidden">
-        {mounted && pool.length > 0 && (
+        {mounted && activePool.length > 0 && (
           <DrumSpinner
-            items={pool}
+            items={activePool}
             spinRef={spinRef}
             keyExtractor={(fate, i) => `${fate}-${i}`}
             renderItem={FateRow}
@@ -181,21 +196,33 @@ export default function FatePage() {
         )}
       </div>
 
-      {/* Footer */}
+      {/* Footer — mirrors spin page layout */}
       <div className="px-4 pb-6 pt-3 shrink-0 space-y-3" style={{ borderTop: '1px solid rgba(168,85,247,0.1)' }}>
         <p className="text-center text-xs tracking-widest uppercase" style={{ color: 'rgba(156,163,175,0.5)' }}>
-          Số phận chưa kết thúc ở đây đâu... 🎭
+          SỐ PHẬN CHƯA KẾT THÚC Ở ĐÂY ĐÂU... 🎭
         </p>
-        {phase === 'idle' && (
-          <button onClick={handleSpin}
-            className="w-full py-4 rounded-full font-black text-white text-base active:scale-95 transition"
-            style={{ background: 'linear-gradient(135deg,#7C3AED 0%,#A855F7 40%,#EC4899 100%)', boxShadow: '0 4px 24px rgba(168,85,247,0.55)' }}>
-            🎭 Quay Nhân Phẩm!
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-base">🤫</span>
+          <span className={`text-sm font-bold ${gameState.secretMode ? 'text-white' : 'text-gray-600'}`}>BÍ MẬT</span>
+          <button onClick={() => updateState({ secretMode: !gameState.secretMode })}
+            className="relative w-12 h-6 rounded-full transition-all duration-300 ml-1"
+            style={{ background: gameState.secretMode ? 'linear-gradient(90deg,#7C3AED,#EC4899)' : 'rgba(75,85,99,0.6)', boxShadow: gameState.secretMode ? '0 0 12px rgba(168,85,247,0.5)' : 'none' }}>
+            <div className="absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all duration-300"
+              style={{ left: gameState.secretMode ? '28px' : '4px' }} />
           </button>
-        )}
-        {phase === 'spinning' && (
-          <div className="text-center py-2">
-            <p className="text-purple-400 font-bold animate-pulse">🌀 Đang định đoạt nhân phẩm...</p>
+        </div>
+        {(phase === 'idle' || phase === 'spinning') && (
+          <div className="flex gap-3">
+            <button onClick={handleShuffle} disabled={phase === 'spinning'}
+              className="flex-none px-5 py-3.5 rounded-full text-white text-sm font-bold transition active:scale-95 disabled:opacity-40"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(168,85,247,0.4)' }}>
+              🔀 XÁO TRỘN
+            </button>
+            <button onClick={handleSpin} disabled={phase === 'spinning'}
+              className="flex-1 py-3.5 rounded-full font-black text-white text-sm disabled:opacity-60 active:scale-95 transition"
+              style={{ background: 'linear-gradient(135deg,#7C3AED 0%,#A855F7 40%,#EC4899 100%)', boxShadow: '0 4px 24px rgba(168,85,247,0.55)' }}>
+              {phase === 'spinning' ? '🌀 Đang quay...' : '⚡ QUAY NHÂN PHẨM'}
+            </button>
           </div>
         )}
         {phase === 'result' && result === 'CAM_CHIU' && (
