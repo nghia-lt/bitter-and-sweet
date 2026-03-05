@@ -29,8 +29,19 @@ export default function SelectVictimPage() {
   return (
     <main className="flex flex-col min-h-screen">
       {/* Header simple for gameplay */}
-      <div className="px-4 py-4 text-center border-b border-purple-900/30">
+      <div className="px-4 py-4 border-b border-purple-900/30 flex items-center">
+        <div className="flex-1" />
         <h1 className="text-xs font-black tracking-widest uppercase text-purple-400">🎰 Vòng Quay Tới Số</h1>
+        <div className="flex-1 flex justify-end">
+          <button
+            onClick={() => router.push('/setup/members')}
+            className="w-9 h-9 flex items-center justify-center rounded-xl transition active:scale-90"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(168,85,247,0.3)' }}
+            title="Thiết lập lại"
+          >
+            <span className="text-base">⚙️</span>
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 px-4 py-6 space-y-6">

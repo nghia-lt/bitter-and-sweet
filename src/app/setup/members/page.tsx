@@ -25,10 +25,15 @@ export default function MembersPage() {
       return;
     }
 
+    const usedEmojis = new Set(gameState.members.map(m => m.emoji));
+    const available = PLAYER_EMOJIS.filter(e => !usedEmojis.has(e));
+    const pool = available.length > 0 ? available : PLAYER_EMOJIS;
+    const emoji = pool[Math.floor(Math.random() * pool.length)];
+
     const newMember: Player = {
       id: `player_${Date.now()}`,
       name,
-      emoji: PLAYER_EMOJIS[gameState.members.length % PLAYER_EMOJIS.length],
+      emoji,
       penaltyCount: 0,
     };
     updateState({ members: [...gameState.members, newMember] });
