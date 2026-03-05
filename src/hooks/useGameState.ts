@@ -15,6 +15,10 @@ export function useGameState() {
         setGameState((prev) => ({ ...prev, ...updates }));
     };
 
+    const toggleSecretMode = () => {
+        setGameState((prev) => ({ ...prev, secretMode: !prev.secretMode }));
+    };
+
     const resetGame = () => {
         setGameState({ ...DEFAULT_GAME_STATE });
     };
@@ -26,6 +30,7 @@ export function useGameState() {
     return {
         gameState,
         updateState,
+        toggleSecretMode,
         resetGame,
         hasExistingData,
     };

@@ -389,23 +389,23 @@ export const PENALTY_GROUPS: {
     icon: string;
     color: string;
 }[] = [
-    { type: "food", label: "Ăn Uống 🍽️", icon: "🍽️", color: "purple" },
-    { type: "mix", label: "Mix 🎲", icon: "🎲", color: "red" },
-    {
-        type: "physical_pair",
-        label: "Thể Xác (Đôi) 💥",
-        icon: "💥",
-        color: "cyan",
-    },
-    {
-        type: "physical_solo",
-        label: "Thể Lực (Đơn) 💪",
-        icon: "💪",
-        color: "green",
-    },
-    { type: "sensitive", label: "Nhạy Cảm 😘", icon: "😘", color: "pink" },
-    { type: "social", label: "Xã Hội 📱", icon: "📱", color: "amber" },
-];
+        { type: "food", label: "Ăn Uống 🍽️", icon: "🍽️", color: "purple" },
+        { type: "mix", label: "Mix 🎲", icon: "🎲", color: "red" },
+        {
+            type: "physical_pair",
+            label: "Thể Xác (Đôi) 💥",
+            icon: "💥",
+            color: "cyan",
+        },
+        {
+            type: "physical_solo",
+            label: "Thể Lực (Đơn) 💪",
+            icon: "💪",
+            color: "green",
+        },
+        { type: "sensitive", label: "Nhạy Cảm 😘", icon: "😘", color: "pink" },
+        { type: "social", label: "Xã Hội 📱", icon: "📱", color: "amber" },
+    ];
 
 // =====================
 //  FATE WEIGHTS
@@ -500,4 +500,5 @@ export const DEFAULT_GAME_STATE = {
     currentPenalties: [],
     sessions: [],
     secretMode: false,
+    penaltySlots: {} as Record<string, number>,
 };
