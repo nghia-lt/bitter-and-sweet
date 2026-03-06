@@ -10,10 +10,22 @@ import type { Penalty, Player, PenaltyResult } from '@/lib/types';
 type SpinPhase = 'idle' | 'spinning' | 'result_secret' | 'result_single' | 'result_pair_select' | 'result_pair_spinning' | 'result_pair_done' | 'result_mix';
 type Step = 'select_punishment' | 'select_target';
 
+// ── Danger level color map ────────────────────────────────────
+const COLOR_MAP: Record<string, { hex: string; glow: string }> = {
+  green:  { hex: '#4ADE80', glow: 'rgba(74,222,128,0.5)' },
+  yellow: { hex: '#FACC15', glow: 'rgba(250,204,21,0.5)' },
+  orange: { hex: '#FB923C', glow: 'rgba(251,146,60,0.5)' },
+  red:    { hex: '#F87171', glow: 'rgba(248,113,113,0.5)' },
+  purple: { hex: '#C084FC', glow: 'rgba(192,132,252,0.5)' },
+};
+
+
 // ═══════════════════════════════════════════════════════════════
 //  PENALTY RENDERERS (Purple theme)
 // ═══════════════════════════════════════════════════════════════
-function PenaltyRow(p: Penalty, _isFocus: boolean, _isAdj: boolean, _idx: number) {
+// ── Penalty row helpers live inside SpinPage as closures (see below)
+// ── No-color fallback row used before mount
+function FallbackPenaltyRow(p: Penalty) {
   return (
     <div className="flex items-center justify-center gap-3 px-5 h-full w-full text-center">
       <span className="text-2xl">{p.icon}</span>
@@ -22,40 +34,6 @@ function PenaltyRow(p: Penalty, _isFocus: boolean, _isAdj: boolean, _idx: number
   );
 }
 
-function SecretRow(_p: Penalty, _isFocus: boolean, _isAdj: boolean, _idx: number) {
-  return (
-    <div className="flex items-center justify-center gap-3 px-5 h-full w-full">
-      <span className="text-2xl">🔒</span>
-      <span className="text-gray-500 font-semibold text-sm">• • •</span>
-    </div>
-  );
-}
-
-function PenaltyFocusOverlay(penalty: Penalty | null, _idx: number, secretMode: boolean) {
-  if (!penalty) return null;
-  return (
-    <div className="h-full mx-1 rounded-2xl overflow-hidden relative pointer-events-none flex flex-col items-center justify-center"
-      style={{
-        background: 'linear-gradient(135deg, #1E0A3C, #0D0D2B)',
-        border: '1.5px solid #A855F7',
-        boxShadow: '0 0 22px rgba(168,85,247,0.55), 0 0 8px rgba(236,72,153,0.3)',
-        padding: '0 16px',
-      }}>
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'linear-gradient(105deg,transparent 40%,rgba(168,85,247,0.07) 50%,transparent 60%)', animation: 'shimmer 3s infinite' }} />
-      <div className="flex items-center justify-between w-full">
-        <span className="text-purple-400 text-lg font-bold select-none">◀</span>
-        <div className="flex items-center gap-2 justify-center flex-1">
-          <span className="text-2xl">{secretMode ? '❓' : penalty.icon}</span>
-          <p className="text-white font-black text-lg leading-snug text-center">
-            {secretMode ? 'BÍ MẬT ???' : penalty.name.toUpperCase()}
-          </p>
-        </div>
-        <span className="text-purple-400 text-lg font-bold select-none">▶</span>
-      </div>
-    </div>
-  );
-}
 
 // ═══════════════════════════════════════════════════════════════
 //  PLAYER RENDERERS (Cyan theme)
@@ -160,6 +138,54 @@ export default function SpinPage() {
 
   const list = shuffledList.length > 0 ? shuffledList : activePenalties;
   const isSecret = secretMode && (phase === 'idle' || phase === 'spinning' || phase === 'result_secret');
+  const penaltyColors = gameState.penaltyColors ?? {};
+
+  // ── Color-aware penalty renderers (closures: capture isSecret + penaltyColors) ──
+  const PenaltyRow = (p: Penalty, _isFocus: boolean, _isAdj: boolean, _idx: number) => {
+    const colorKey = penaltyColors[p.id];
+    const color = (!isSecret && colorKey) ? COLOR_MAP[colorKey] : null;
+    return (
+      <div className="flex items-center justify-center gap-3 px-5 h-full w-full text-center">
+        <span className="text-2xl" style={color ? { filter: `drop-shadow(0 0 4px ${color.hex})` } : undefined}>{p.icon}</span>
+        <span className="font-semibold text-sm" style={{ color: color ? color.hex : '#FFFFFF' }}>{p.name}</span>
+      </div>
+    );
+  };
+
+  const SecretRow = (_p: Penalty, _isFocus: boolean, _isAdj: boolean, _idx: number) => (
+    <div className="flex items-center justify-center gap-3 px-5 h-full w-full">
+      <span className="text-2xl">🔒</span>
+      <span className="text-gray-500 font-semibold text-sm">• • •</span>
+    </div>
+  );
+
+  const PenaltyFocusOverlay = (penalty: Penalty | null, _idx: number, sm: boolean) => {
+    if (!penalty) return null;
+    const colorKey = penaltyColors[penalty.id];
+    // In secret mode (unrevealed): purple/default; otherwise use danger color if set
+    const color = (!sm && colorKey) ? COLOR_MAP[colorKey] : null;
+    const borderColor = color ? color.hex : '#A855F7';
+    const glowColor  = color ? color.glow : 'rgba(168,85,247,0.55)';
+    const shimmerColor = color ? `${color.hex}15` : 'rgba(168,85,247,0.07)';
+    return (
+      <div className="h-full mx-1 rounded-2xl overflow-hidden relative pointer-events-none flex flex-col items-center justify-center"
+        style={{ background: 'linear-gradient(135deg, #1E0A3C, #0D0D2B)', border: `1.5px solid ${borderColor}`,
+          boxShadow: `0 0 22px ${glowColor}, 0 0 8px ${glowColor}`, padding: '0 16px' }}>
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: `linear-gradient(105deg,transparent 40%,${shimmerColor} 50%,transparent 60%)`, animation: 'shimmer 3s infinite' }} />
+        <div className="flex items-center justify-between w-full">
+          <span className="text-lg font-bold select-none" style={{ color: borderColor }}>◀</span>
+          <div className="flex items-center gap-2 justify-center flex-1">
+            <span className="text-2xl">{sm ? '❓' : penalty.icon}</span>
+            <p className="font-black text-lg leading-snug text-center" style={{ color: color ? color.hex : '#FFFFFF' }}>
+              {sm ? 'BÍ MẬT ???' : penalty.name.toUpperCase()}
+            </p>
+          </div>
+          <span className="text-lg font-bold select-none" style={{ color: borderColor }}>▶</span>
+        </div>
+      </div>
+    );
+  };
 
   // ═══════════════════════════════════════════════════════════
   //  PENALTY WHEEL HANDLERS

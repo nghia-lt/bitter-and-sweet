@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGameState } from '@/hooks/useGameState';
 import { Button } from '@/components/ui/Button';
@@ -15,6 +16,8 @@ const FATE_BADGE: Record<FateType, { label: string; bg: string; text: string; bo
 export default function ResultPage() {
   const router = useRouter();
   const { gameState, updateState } = useGameState();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   const victim = gameState.members.find(m => m.id === gameState.currentVictimId);
   const penalties = gameState.currentPenalties;
@@ -24,6 +27,13 @@ export default function ResultPage() {
   const originalVictim = ctx ? gameState.members.find(m => m.id === ctx.originalVictimId) : null;
   const targetPlayer   = ctx?.targetId ? gameState.members.find(m => m.id === ctx.targetId) : null;
   const newExecutioner = ctx?.newExecutionerId ? gameState.members.find(m => m.id === ctx.newExecutionerId) : null;
+
+  if (!mounted) {
+    return (
+      <main className="flex flex-col min-h-screen"
+        style={{ background: 'radial-gradient(ellipse 80% 55% at 50% 30%, #1a0a33 0%, #0F0F1A 60%, #0a0a12 100%)' }} />
+    );
+  }
 
   const handleDone = () => {
     const round = {
@@ -129,11 +139,16 @@ export default function ResultPage() {
               </div>
             )}
             {ctx.destinyCard === 'CAM_CHIU' && (
-              <p className="text-gray-400 text-xs">Nhân phẩm đã xét xử — {originalVictim.name} tự chịu phạt.</p>
+              <div className="space-y-1.5 text-sm">
+                <div className="flex gap-2">
+                  <span className="text-gray-500">😭 Tự chịu phạt:</span>
+                  <span className="font-bold" style={{ color: '#F87171' }}>{originalVictim.name}</span>
+                </div>
+              </div>
             )}
 
-            {/* Penalty list embedded in fate banner for non-CAM_CHIU */}
-            {ctx.destinyCard !== 'CAM_CHIU' && penalties.length > 0 && (
+            {/* Penalty list embedded in fate banner — ALL card types */}
+            {penalties.length > 0 && (
               <div className="border-t mt-2 pt-2" style={{ borderColor: badge.border }}>
                 <p className="text-xs text-gray-500 mb-1">🔨 Hình phạt:</p>
                 <div className="space-y-1">
@@ -141,7 +156,9 @@ export default function ResultPage() {
                     <div key={i} className="flex items-center gap-2 text-sm">
                       <span>{r.penalty.icon}</span>
                       <span className="text-white font-semibold">{r.penalty.name}</span>
-                      {r.partnerName && <span className="text-gray-500 text-xs">— do {r.partnerName}</span>}
+                      {r.partnerName
+                        ? <span className="text-gray-500 text-xs">— do {r.partnerName}</span>
+                        : <span className="text-gray-600 text-xs">— Tự xử</span>}
                     </div>
                   ))}
                 </div>
@@ -150,8 +167,8 @@ export default function ResultPage() {
           </div>
         )}
 
-        {/* ── PENALTY CARD —— only shown when no fate intervention (or CAM_CHIU) ── */}
-        {victim && (!ctx || ctx.destinyCard === 'CAM_CHIU') && (
+        {/* ── PENALTY CARD —— only shown when fate page was NOT visited at all ── */}
+        {victim && !ctx && (
           <div className="rounded-2xl p-4"
             style={{ background: 'rgba(15,15,26,0.8)', border: '1.5px solid rgba(168,85,247,0.35)', boxShadow: '0 0 20px rgba(168,85,247,0.15)' }}>
 

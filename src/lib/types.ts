@@ -30,6 +30,7 @@ export interface Penalty {
     quantity?: string; // e.g. "2 lát", "3 cái"
     isMix?: boolean; // triggers additional spins
     mixCount?: number; // how many additional spins
+    defaultColor?: string; // default danger color key: 'green'|'yellow'|'orange'|'red'|'purple'
 }
 
 export interface ExclusionRule {
@@ -105,4 +106,5 @@ export interface GameState {
     secretMode: boolean;
     fateWeights: Record<string, number>; // configurable fate probability weights
     fateContext?: FateContext; // outcome from last fate wheel spin
+    penaltyColors: Record<string, string>; // per-penalty color key ('green'|'yellow'|'orange'|'red'|'purple')
 }

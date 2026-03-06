@@ -73,6 +73,22 @@ export default function PenaltiesPage() {
     updateState({ fateWeights: { ...(gameState.fateWeights ?? FATE_WEIGHTS), [id]: next } });
   };
 
+  // ── Penalty color helpers ────────────────────────────────
+  const COLOR_OPTS = [
+    { key: 'green',  dot: '#4ADE80', label: 'Dễ' },
+    { key: 'yellow', dot: '#FACC15', label: 'Vừa' },
+    { key: 'orange', dot: '#FB923C', label: 'Khó' },
+    { key: 'red',    dot: '#F87171', label: 'Nặng' },
+    { key: 'purple', dot: '#C084FC', label: 'Huỳ' },
+  ] as const;
+  const getPenaltyColor = (id: string) => (gameState.penaltyColors ?? {})[id] ?? '';
+  const setPenaltyColor = (id: string, colorKey: string) => {
+    const existing = getPenaltyColor(id);
+    // Tapping active color clears it
+    const next = existing === colorKey ? '' : colorKey;
+    updateState({ penaltyColors: { ...(gameState.penaltyColors ?? {}), [id]: next } });
+  };
+
   return (
     <main className="flex flex-col min-h-screen">
       <AppHeader step={2} totalSteps={3} />
@@ -121,51 +137,52 @@ export default function PenaltiesPage() {
                   return (
                     <div
                       key={penalty.id}
-                      className={`flex items-center gap-3 ${!enabled ? 'opacity-30' : ''}`}
+                      className={`flex flex-col gap-1.5 ${!enabled ? 'opacity-30' : ''}`}
                     >
-                      {/* Checkbox */}
-                      <input
-                        type="checkbox"
-                        checked={selected && enabled}
-                        disabled={!enabled}
-                        onChange={() => togglePenalty(penalty.id)}
-                        className="accent-purple-500 w-4 h-4 shrink-0"
-                      />
-                      <span className="text-lg shrink-0">{penalty.icon}</span>
-                      <span className="flex-1 text-sm text-gray-200 min-w-0">{penalty.name}</span>
-
-                      {/* Slot stepper: − ×N + */}
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          onClick={() => changeSlots(penalty.id, penalty.slots, -1)}
-                          disabled={!enabled || slots <= 0}
-                          className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black transition active:scale-90 disabled:opacity-30"
-                          style={{
-                            background: 'rgba(168,85,247,0.15)',
-                            border: '1px solid rgba(168,85,247,0.35)',
-                            color: '#C084FC',
-                          }}
-                        >
-                          −
-                        </button>
-                        <span
-                          className="text-xs font-black w-7 text-center tabular-nums"
-                          style={{ color: slots === 0 ? '#4B5563' : '#C084FC' }}
-                        >
-                          ×{slots}
-                        </span>
-                        <button
-                          onClick={() => changeSlots(penalty.id, penalty.slots, +1)}
-                          disabled={!enabled || slots >= 5}
-                          className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black transition active:scale-90 disabled:opacity-30"
-                          style={{
-                            background: 'rgba(168,85,247,0.15)',
-                            border: '1px solid rgba(168,85,247,0.35)',
-                            color: '#C084FC',
-                          }}
-                        >
-                          +
-                        </button>
+                      {/* ── Row 1: checkbox + name + stepper ── */}
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={selected && enabled}
+                          disabled={!enabled}
+                          onChange={() => togglePenalty(penalty.id)}
+                          className="accent-purple-500 w-4 h-4 shrink-0"
+                        />
+                        <span className="text-lg shrink-0">{penalty.icon}</span>
+                        <span className="flex-1 text-sm text-gray-200 min-w-0">{penalty.name}</span>
+                        {/* Slot stepper: − ×N + */}
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            onClick={() => changeSlots(penalty.id, penalty.slots, -1)}
+                            disabled={!enabled || slots <= 0}
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black transition active:scale-90 disabled:opacity-30"
+                            style={{ background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.35)', color: '#C084FC' }}
+                          >−</button>
+                          <span className="text-xs font-black w-7 text-center tabular-nums"
+                            style={{ color: slots === 0 ? '#4B5563' : '#C084FC' }}>×{slots}</span>
+                          <button
+                            onClick={() => changeSlots(penalty.id, penalty.slots, +1)}
+                            disabled={!enabled || slots >= 5}
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black transition active:scale-90 disabled:opacity-30"
+                            style={{ background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.35)', color: '#C084FC' }}
+                          >+</button>
+                        </div>
+                      </div>
+                      {/* ── Row 2: color swatches indented to align with name ── */}
+                      <div className="flex items-center gap-2 pl-11">
+                        <span className="text-xs text-gray-600 shrink-0">Mức độ:</span>
+                        {COLOR_OPTS.map(c => {
+                          const active = getPenaltyColor(penalty.id) === c.key;
+                          return (
+                            <button key={c.key} title={c.label}
+                              onClick={() => setPenaltyColor(penalty.id, c.key)}
+                              className="w-4 h-4 rounded-full transition-all active:scale-90"
+                              style={{ background: c.dot, opacity: active ? 1 : 0.25,
+                                boxShadow: active ? `0 0 6px ${c.dot}` : 'none',
+                                border: active ? `1.5px solid ${c.dot}` : '1.5px solid transparent' }}
+                            />
+                          );
+                        })}
                       </div>
                     </div>
                   );

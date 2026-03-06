@@ -25,6 +25,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 3,
         requiresPartner: false,
         quantity: "1/8 quả",
+        defaultColor: "green",
     },
     {
         id: "chanh_2",
@@ -35,6 +36,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 2,
         requiresPartner: false,
         quantity: "1/4 quả",
+        defaultColor: "orange",
     },
     {
         id: "chanh_3",
@@ -45,6 +47,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 1,
         requiresPartner: false,
         quantity: "1/2 quả",
+        defaultColor: "red",
     },
     {
         id: "ot_1",
@@ -55,6 +58,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 3,
         requiresPartner: false,
         quantity: "1 lát",
+        defaultColor: "yellow",
     },
     {
         id: "ot_2",
@@ -65,6 +69,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 1,
         requiresPartner: false,
         quantity: "2 lát",
+        defaultColor: "red",
     },
     {
         id: "gung_1",
@@ -75,6 +80,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 3,
         requiresPartner: false,
         quantity: "1 lát",
+        defaultColor: "green",
     },
     {
         id: "gung_2",
@@ -85,6 +91,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 2,
         requiresPartner: false,
         quantity: "2 lát",
+        defaultColor: "orange",
     },
     {
         id: "gung_3",
@@ -95,6 +102,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 1,
         requiresPartner: false,
         quantity: "3 lát",
+        defaultColor: "red",
     },
     {
         id: "toi_1",
@@ -105,6 +113,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 2,
         requiresPartner: false,
         quantity: "1 lát",
+        defaultColor: "yellow",
     },
     {
         id: "toi_2",
@@ -115,6 +124,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 1,
         requiresPartner: false,
         quantity: "2 lát",
+        defaultColor: "orange",
     },
     {
         id: "muop_1",
@@ -125,6 +135,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 3,
         requiresPartner: false,
         quantity: "1 miếng",
+        defaultColor: "yellow",
     },
     {
         id: "muop_2",
@@ -135,6 +146,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 2,
         requiresPartner: false,
         quantity: "2 miếng",
+        defaultColor: "orange",
     },
     {
         id: "muop_3",
@@ -145,6 +157,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 1,
         requiresPartner: false,
         quantity: "3 miếng",
+        defaultColor: "red",
     },
 
     // --- MIX ---
@@ -157,6 +170,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         requiresPartner: false,
         isMix: true,
         mixCount: 2,
+        defaultColor: "red",
     },
     {
         id: "mix_3",
@@ -167,6 +181,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         requiresPartner: false,
         isMix: true,
         mixCount: 3,
+        defaultColor: "purple",
     },
 
     // --- THỂ XÁC - ĐÔI (physical_pair) ---
@@ -178,6 +193,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 4,
         requiresPartner: true,
         quantity: "1 cái",
+        defaultColor: "green",
     },
     {
         id: "tet_tay_2",
@@ -187,6 +203,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 3,
         requiresPartner: true,
         quantity: "2 cái",
+        defaultColor: "yellow",
     },
     {
         id: "tet_tay_3",
@@ -196,6 +213,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 2,
         requiresPartner: true,
         quantity: "3 cái",
+        defaultColor: "orange",
     },
     {
         id: "tet_tay_4",
@@ -205,6 +223,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 1,
         requiresPartner: true,
         quantity: "4 cái",
+        defaultColor: "red",
     },
     {
         id: "tet_dui_1",
@@ -214,6 +233,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 2,
         requiresPartner: true,
         quantity: "1 cái",
+        defaultColor: "orange",
     },
     {
         id: "tet_dui_2",
@@ -223,6 +243,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 1,
         requiresPartner: true,
         quantity: "2 cái",
+        defaultColor: "red",
     },
     {
         id: "bung_tai_1",
@@ -232,6 +253,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 3,
         requiresPartner: true,
         quantity: "1 cái",
+        defaultColor: "green",
     },
     {
         id: "bung_tai_2",
@@ -241,6 +263,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 2,
         requiresPartner: true,
         quantity: "2 cái",
+        defaultColor: "yellow",
     },
     {
         id: "bung_tai_3",
@@ -250,6 +273,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 1,
         requiresPartner: true,
         quantity: "3 cái",
+        defaultColor: "orange",
     },
 
     // --- THỂ LỰC - ĐƠN (physical_solo) ---
@@ -261,6 +285,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 3,
         requiresPartner: false,
         quantity: "10 cái",
+        defaultColor: "green",
     },
     {
         id: "squat_20",
@@ -270,6 +295,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 2,
         requiresPartner: false,
         quantity: "20 cái",
+        defaultColor: "yellow",
     },
     {
         id: "squat_30",
@@ -279,6 +305,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 1,
         requiresPartner: false,
         quantity: "30 cái",
+        defaultColor: "orange",
     },
     {
         id: "plank_30",
@@ -288,6 +315,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 3,
         requiresPartner: false,
         quantity: "30s",
+        defaultColor: "yellow",
     },
     {
         id: "plank_45",
@@ -297,6 +325,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 2,
         requiresPartner: false,
         quantity: "45s",
+        defaultColor: "orange",
     },
     {
         id: "plank_60",
@@ -306,6 +335,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 1,
         requiresPartner: false,
         quantity: "60s",
+        defaultColor: "red",
     },
     {
         id: "pushup_5",
@@ -315,6 +345,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 3,
         requiresPartner: false,
         quantity: "5 cái",
+        defaultColor: "green",
     },
     {
         id: "pushup_10",
@@ -324,6 +355,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 2,
         requiresPartner: false,
         quantity: "10 cái",
+        defaultColor: "yellow",
     },
     {
         id: "pushup_15",
@@ -333,6 +365,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         slots: 1,
         requiresPartner: false,
         quantity: "15 cái",
+        defaultColor: "orange",
     },
 
     // --- NHẠY CẢM - ĐÔI (sensitive) ---
@@ -343,6 +376,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         type: "sensitive",
         slots: 2,
         requiresPartner: true,
+        defaultColor: "purple",
     },
     {
         id: "hon_ma",
@@ -351,6 +385,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         type: "sensitive",
         slots: 1,
         requiresPartner: true,
+        defaultColor: "purple",
     },
 
     // --- XÃ HỘI - ĐƠN (social) ---
@@ -361,6 +396,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         type: "social",
         slots: 3,
         requiresPartner: false,
+        defaultColor: "yellow",
     },
     {
         id: "dang_status_48",
@@ -369,6 +405,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         type: "social",
         slots: 2,
         requiresPartner: false,
+        defaultColor: "orange",
     },
     {
         id: "dang_status_72",
@@ -377,6 +414,7 @@ export const DEFAULT_PENALTIES: Penalty[] = [
         type: "social",
         slots: 1,
         requiresPartner: false,
+        defaultColor: "red",
     },
 ];
 
@@ -507,4 +545,10 @@ export const DEFAULT_GAME_STATE = {
         THOAT_KIP: 7,
         KIM_THIEN: 3,
     } as Record<string, number>,
+    penaltyColors: Object.fromEntries(
+        DEFAULT_PENALTIES.filter((p) => p.defaultColor).map((p) => [
+            p.id,
+            p.defaultColor!,
+        ]),
+    ) as Record<string, string>,
 };
