@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGameState } from '@/hooks/useGameState';
+import { useGameAudio } from '@/hooks/useGameAudio';
 import { DrumSpinner, useDrumSpin } from '@/components/ui/DrumSpinner';
 import { FATE_CONFIG, FATE_WEIGHTS } from '@/lib/constants';
 import { checkExclusion } from '@/lib/exclusion-logic';
@@ -130,6 +131,7 @@ function PlayerFocusOverlay(player: Player | null, _idx: number) {
 export default function FatePage() {
   const router = useRouter();
   const { gameState, updateState } = useGameState();
+  const { playSpinSound } = useGameAudio();
 
   const victim = gameState.members.find(m => m.id === gameState.currentVictimId);
   // Players excluding the current victim — for secondary wheel
@@ -392,6 +394,7 @@ export default function FatePage() {
             renderItem={isSecret ? SecretFateRow : FateRow}
             renderFocusOverlay={isSecret ? SecretFateFocusOverlay : FateFocusOverlay}
             onSpinEnd={handleSpinEnd}
+            onItemChange={playSpinSound}
           />
         )}
 
@@ -407,6 +410,7 @@ export default function FatePage() {
                 renderItem={PlayerRow}
                 renderFocusOverlay={PlayerFocusOverlay}
                 onSpinEnd={handleSecondaryWheelEnd}
+                onItemChange={playSpinSound}
               />
             )}
 

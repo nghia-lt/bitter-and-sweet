@@ -53,6 +53,8 @@ interface DrumSpinnerProps<T> {
   renderFocusOverlay?: (item: T | null, originalIndex: number) => ReactNode;
   keyExtractor: (item: T, index: number) => string;
   onSpinEnd?: (item: T, index: number) => void;
+  /** Fires each time the center item changes during a spin (use for SFX tick) */
+  onItemChange?: () => void;
   spinRef?: React.MutableRefObject<SpinHandle | null>;
 }
 
@@ -63,7 +65,7 @@ export interface SpinHandle {
 }
 
 export function DrumSpinner<T>({
-  items, renderItem, renderFocusOverlay, keyExtractor, onSpinEnd, spinRef,
+  items, renderItem, renderFocusOverlay, keyExtractor, onSpinEnd, onItemChange, spinRef,
 }: DrumSpinnerProps<T>) {
   const N = items.length;
   if (N === 0) return null;
@@ -87,11 +89,18 @@ export function DrumSpinner<T>({
   const scrollRef = useRef<HTMLDivElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const pendingLand = useRef<{ pos: number; targetIdx: number; targetY: number } | null>(null);
+  const yOffsetRef = useRef(0);            // always-fresh mirror of yOffset for rAF
+  const onItemChangeRef = useRef(onItemChange);
+  useEffect(() => { onItemChangeRef.current = onItemChange; }, [onItemChange]);
+  const prevCenterIdxRef = useRef(-1);     // tracks last center index for change detection
 
   const windowH = VISIBLE * ITEM_H;
   const topPad = Math.floor(VISIBLE / 2) * ITEM_H;
 
   const calcY = useCallback((pos: number) => -(pos * ITEM_H - topPad), [topPad]);
+
+  // Keep yOffsetRef in sync
+  useEffect(() => { yOffsetRef.current = yOffset; }, [yOffset]);
 
   // Init
   useEffect(() => { setYOffset(calcY(stoppedAt)); }, []);
@@ -148,6 +157,23 @@ export function DrumSpinner<T>({
         const duration = MIN_DURATION + Math.random() * (MAX_DURATION - MIN_DURATION);
 
         pendingLand.current = { pos: landPos, targetIdx: targetIndex, targetY };
+        prevCenterIdxRef.current = -1;
+
+        // rAF-based index tracker for SFX tick
+        let rafId: number;
+        const track = () => {
+          const y = yOffsetRef.current;
+          // center item index = (-y + topPad) / ITEM_H  (rounded)
+          const centerPos = Math.round((-y + topPad) / ITEM_H);
+          if (centerPos !== prevCenterIdxRef.current) {
+            prevCenterIdxRef.current = centerPos;
+            onItemChangeRef.current?.();
+          }
+          rafId = requestAnimationFrame(track);
+        };
+        rafId = requestAnimationFrame(track);
+        // Stop tracker when spin settles (duration + bounce + settle ≈ duration + 0.8s)
+        addTimer(() => cancelAnimationFrame(rafId), (duration + 0.8) * 1000);
 
         // Motion blur
         setBlur(4);

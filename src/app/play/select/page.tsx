@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGameState } from '@/hooks/useGameState';
 import { Button } from '@/components/ui/Button';
@@ -9,6 +9,10 @@ export default function SelectVictimPage() {
   const { gameState, updateState } = useGameState();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return <main className="flex flex-col min-h-screen" />;
 
   const selectedPlayer = gameState.members.find(m => m.id === selectedId);
 

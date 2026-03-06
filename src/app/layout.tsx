@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: 'Thua là phải chịu. Không chạy đâu được.',
 };
 
+import { GlobalAudio } from '@/components/ui/GlobalAudio';
+
 export default function RootLayout({
   children,
 }: {
@@ -22,6 +24,7 @@ export default function RootLayout({
         />
       </head>
       <body className="game-container min-h-screen">
+        <GlobalAudio />
         <div className="phone-frame">
           {children}
         </div>

@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGameState } from '@/hooks/useGameState';
+import { useGameAudio } from '@/hooks/useGameAudio';
 import { DrumSpinner, useDrumSpin } from '@/components/ui/DrumSpinner';
 import { weightedRandom, filterFoodPenalties, getActivePenalties } from '@/lib/wheel-logic';
 import { getEligiblePartners } from '@/lib/exclusion-logic';
@@ -77,6 +78,7 @@ function PlayerFocusOverlay(player: Player | null, _idx: number) {
 export default function SpinPage() {
   const router = useRouter();
   const { gameState, updateState, toggleSecretMode } = useGameState();
+  const { muted, toggleMute, playSpinSound } = useGameAudio();
 
   const victim = gameState.members.find(m => m.id === gameState.currentVictimId);
   const activePenalties = getActivePenalties(
@@ -355,7 +357,14 @@ export default function SpinPage() {
             </>
           )}
         </div>
-        <div className="w-10 h-10 shrink-0" />
+        <button
+          onClick={toggleMute}
+          className="w-10 h-10 shrink-0 flex items-center justify-center rounded-full transition-all active:scale-90"
+          style={{ background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.3)' }}
+          title={muted ? 'Bật âm thanh' : 'Tắt âm thanh'}
+        >
+          <span className="text-lg">{muted ? '🔇' : '🔊'}</span>
+        </button>
       </div>
 
       {/* ═══ SUBTITLE ═══ */}
@@ -402,6 +411,7 @@ export default function SpinPage() {
               renderItem={isSecret ? SecretRow : PenaltyRow}
               renderFocusOverlay={(item, idx) => PenaltyFocusOverlay(item, idx, isSecret)}
               onSpinEnd={handleSpinEnd}
+              onItemChange={playSpinSound}
             />
           )}
         </div>
@@ -423,6 +433,7 @@ export default function SpinPage() {
               renderItem={PlayerRow}
               renderFocusOverlay={PlayerFocusOverlay}
               onSpinEnd={handlePlayerSpinEnd}
+              onItemChange={playSpinSound}
             />
           )}
         </div>
