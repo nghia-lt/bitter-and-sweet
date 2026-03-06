@@ -101,7 +101,14 @@ export default function SpinPage() {
   const { gameState, updateState, toggleSecretMode } = useGameState();
 
   const victim = gameState.members.find(m => m.id === gameState.currentVictimId);
-  const activePenalties = getActivePenalties(gameState.selectedPenalties, gameState.penaltySlots ?? {});
+  const activePenalties = getActivePenalties(
+    gameState.selectedPenalties,
+    gameState.penaltySlots ?? {},
+    gameState.selectedIngredients ?? [],
+  );
+  // Debug: see what's being fed into the wheel (open DevTools → Console)
+  console.log('Filtered Data:', activePenalties.map(p => p.name));
+
 
   // ── State ──
   const [shuffledList, setShuffledList] = useState<Penalty[]>([]);
@@ -128,11 +135,28 @@ export default function SpinPage() {
 
   // ── Eligible players for pair penalty ──
   const eligible = resultPenalty ? getEligiblePartners(resultPenalty, victim, gameState.members, gameState.exclusionRules) : [];
+  const [shuffledEligible, setShuffledEligible] = useState<Player[]>([]);
 
+  // ── Shuffle helper ────────────────────────────────────────────
+  function fisherYates<T>(arr: T[]): T[] {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // Auto-shuffle penalty list on mount
   useEffect(() => {
     setMounted(true);
-    if (activePenalties.length > 0) setShuffledList([...activePenalties]);
+    if (activePenalties.length > 0) setShuffledList(fisherYates(activePenalties));
   }, []);
+
+  // Auto-shuffle player list whenever eligible players change (pair penalty selected)
+  useEffect(() => {
+    if (eligible.length > 0) setShuffledEligible(fisherYates(eligible));
+  }, [eligible.length]);
 
   const list = shuffledList.length > 0 ? shuffledList : activePenalties;
   const isSecret = secretMode && (phase === 'idle' || phase === 'spinning' || phase === 'result_secret');
@@ -190,11 +214,11 @@ export default function SpinPage() {
   //  PLAYER WHEEL HANDLERS
   // ═══════════════════════════════════════════════════════════
   const handlePlayerSpin = useCallback(() => {
-    if (phase === 'result_pair_spinning' || eligible.length === 0) return;
-    const landIdx = Math.floor(Math.random() * eligible.length);
+    if (phase === 'result_pair_spinning' || shuffledEligible.length === 0) return;
+    const landIdx = Math.floor(Math.random() * shuffledEligible.length);
     setPhase('result_pair_spinning');
     playerSpin(landIdx);
-  }, [phase, eligible, playerSpin]);
+  }, [phase, shuffledEligible, playerSpin]);
 
   const handlePlayerSpinEnd = useCallback((player: Player, _index: number) => {
     setPartner(player);
@@ -299,8 +323,7 @@ export default function SpinPage() {
                 <span className="text-base">🎯</span>
                 <span className="font-black text-base tracking-wider text-white">TÌM ĐỒNG ĐỘI</span>
               </div>
-              <p className="text-xs font-bold tracking-widest"
-                style={{ background: 'linear-gradient(90deg,#06B6D4,#22D3EE)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <p className="text-xs font-bold tracking-widest text-cyan-400">
                 VÒNG QUAY NGƯỜI CHƠI
               </p>
             </>
@@ -366,9 +389,9 @@ export default function SpinPage() {
           pointerEvents: isTargetStep ? 'auto' : 'none',
         }}
           className="flex-1 flex flex-col justify-center overflow-hidden">
-          {mounted && isTargetStep && eligible.length > 0 && (
+          {mounted && isTargetStep && shuffledEligible.length > 0 && (
             <DrumSpinner
-              items={eligible}
+              items={shuffledEligible}
               spinRef={playerSpinRef}
               keyExtractor={(p, i) => `${p.id}-${i}`}
               renderItem={PlayerRow}

@@ -389,32 +389,32 @@ export const PENALTY_GROUPS: {
     icon: string;
     color: string;
 }[] = [
-        { type: "food", label: "Ăn Uống 🍽️", icon: "🍽️", color: "purple" },
-        { type: "mix", label: "Mix 🎲", icon: "🎲", color: "red" },
-        {
-            type: "physical_pair",
-            label: "Thể Xác (Đôi) 💥",
-            icon: "💥",
-            color: "cyan",
-        },
-        {
-            type: "physical_solo",
-            label: "Thể Lực (Đơn) 💪",
-            icon: "💪",
-            color: "green",
-        },
-        { type: "sensitive", label: "Nhạy Cảm 😘", icon: "😘", color: "pink" },
-        { type: "social", label: "Xã Hội 📱", icon: "📱", color: "amber" },
-    ];
+    { type: "food", label: "Ăn Uống 🍽️", icon: "🍽️", color: "purple" },
+    { type: "mix", label: "Mix 🎲", icon: "🎲", color: "red" },
+    {
+        type: "physical_pair",
+        label: "Thể Xác (Đôi) 💥",
+        icon: "💥",
+        color: "cyan",
+    },
+    {
+        type: "physical_solo",
+        label: "Thể Lực (Đơn) 💪",
+        icon: "💪",
+        color: "green",
+    },
+    { type: "sensitive", label: "Nhạy Cảm 😘", icon: "😘", color: "pink" },
+    { type: "social", label: "Xã Hội 📱", icon: "📱", color: "amber" },
+];
 
 // =====================
 //  FATE WEIGHTS
 // =====================
 export const FATE_WEIGHTS = {
-    CAM_CHIU: 83,
-    CHET_CHUM: 10,
-    THOAT_KIP: 5,
-    KIM_THIEN: 2,
+    CAM_CHIU: 75,
+    CHET_CHUM: 15,
+    THOAT_KIP: 7,
+    KIM_THIEN: 3,
 };
 
 export const FATE_CONFIG = {
@@ -422,25 +422,25 @@ export const FATE_CONFIG = {
         label: "😩 Cam Chịu",
         color: "#6B7280",
         description: "Nhân phẩm hết rồi bạn ơi 😩",
-        probability: 83,
+        probability: 75,
     },
     CHET_CHUM: {
         label: "💀 Chết Chùm",
         color: "#06B6D4",
         description: "Kéo thêm 1 người chết chung! 💀",
-        probability: 10,
+        probability: 15,
     },
     THOAT_KIP: {
         label: "🏃 Thoát Kíp",
         color: "#22C55E",
         description: "THOÁT! Nhưng ai đó phải chết thay...",
-        probability: 5,
+        probability: 7,
     },
     KIM_THIEN: {
         label: "✨ Kim Thiền",
         color: "#EAB308",
         description: "HUYỀN THOẠI! Chuyển toàn bộ hình phạt!",
-        probability: 2,
+        probability: 3,
     },
 };
 
@@ -501,4 +501,10 @@ export const DEFAULT_GAME_STATE = {
     sessions: [],
     secretMode: false,
     penaltySlots: {} as Record<string, number>,
+    fateWeights: {
+        CAM_CHIU: 75,
+        CHET_CHUM: 15,
+        THOAT_KIP: 7,
+        KIM_THIEN: 3,
+    } as Record<string, number>,
 };

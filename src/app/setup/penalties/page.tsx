@@ -3,8 +3,8 @@ import { useRouter } from 'next/navigation';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { Button } from '@/components/ui/Button';
 import { useGameState } from '@/hooks/useGameState';
-import { DEFAULT_PENALTIES, PENALTY_GROUPS, INGREDIENTS } from '@/lib/constants';
-import type { IngredientId } from '@/lib/types';
+import { DEFAULT_PENALTIES, PENALTY_GROUPS, INGREDIENTS, FATE_CONFIG, FATE_WEIGHTS } from '@/lib/constants';
+import type { FateType, IngredientId } from '@/lib/types';
 
 export default function PenaltiesPage() {
   const router = useRouter();
@@ -24,10 +24,22 @@ export default function PenaltiesPage() {
 
   const toggleIngredient = (id: IngredientId) => {
     const current = gameState.selectedIngredients;
+    const turningOff = current.includes(id);
+    const nextIngredients = turningOff
+      ? current.filter(i => i !== id)
+      : [...current, id];
+
+    // When turning an ingredient OFF, auto-remove its dependent penalties
+    const nextPenalties = turningOff
+      ? gameState.selectedPenalties.filter(pid => {
+          const p = DEFAULT_PENALTIES.find(x => x.id === pid);
+          return !p || p.ingredient !== id; // keep penalties NOT tied to this ingredient
+        })
+      : gameState.selectedPenalties;
+
     updateState({
-      selectedIngredients: current.includes(id)
-        ? current.filter(i => i !== id)
-        : [...current, id],
+      selectedIngredients: nextIngredients,
+      selectedPenalties: nextPenalties,
     });
   };
 
@@ -50,6 +62,16 @@ export default function PenaltiesPage() {
   };
 
   const canProceed = gameState.selectedPenalties.filter(id => isPenaltyEnabled(id)).length > 0;
+
+  // ── Fate weight helpers ─────────────────────────────────────
+  const FATE_TYPES: FateType[] = ['CAM_CHIU', 'CHET_CHUM', 'THOAT_KIP', 'KIM_THIEN'];
+  const getFateWeight = (id: FateType) =>
+    (gameState.fateWeights ?? FATE_WEIGHTS)[id] ?? FATE_WEIGHTS[id];
+  const changeFateWeight = (id: FateType, delta: number) => {
+    const current = getFateWeight(id);
+    const next = Math.max(0, Math.min(99, current + delta));
+    updateState({ fateWeights: { ...(gameState.fateWeights ?? FATE_WEIGHTS), [id]: next } });
+  };
 
   return (
     <main className="flex flex-col min-h-screen">
@@ -152,6 +174,33 @@ export default function PenaltiesPage() {
             </div>
           );
         })}
+        {/* ── Nhân Phẩm (Fate) config ── */}
+        <div className="glass rounded-2xl p-4 border border-white/10">
+          <h3 className="font-bold text-white mb-1">🎭 Nhân Phẩm</h3>
+          <p className="text-xs text-gray-500 mb-3">Cấu hình tỷ lệ xuất hiện các kết quả vòng quay nhân phẩm</p>
+          <div className="space-y-2">
+            {FATE_TYPES.map(fate => {
+              const cfg = FATE_CONFIG[fate];
+              const weight = getFateWeight(fate);
+              return (
+                <div key={fate} className="flex items-center gap-3">
+                  <span className="text-lg shrink-0">{cfg.label.split(' ')[0]}</span>
+                  <span className="flex-1 text-sm text-gray-200 min-w-0">{cfg.label.split(' ').slice(1).join(' ')}</span>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button onClick={() => changeFateWeight(fate, -1)} disabled={weight <= 0}
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black transition active:scale-90 disabled:opacity-30"
+                      style={{ background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.35)', color: '#C084FC' }}>−</button>
+                    <span className="text-xs font-black w-7 text-center tabular-nums"
+                      style={{ color: weight === 0 ? '#4B5563' : '#C084FC' }}>×{weight}</span>
+                    <button onClick={() => changeFateWeight(fate, +1)} disabled={weight >= 99}
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black transition active:scale-90 disabled:opacity-30"
+                      style={{ background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.35)', color: '#C084FC' }}>+</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 px-4 pb-8 pt-4 bg-gradient-to-t from-dark-bg to-transparent max-w-[480px] mx-auto">

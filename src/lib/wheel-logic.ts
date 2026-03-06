@@ -44,19 +44,33 @@ export function filterFoodPenalties(penaltyIds: string[]): Penalty[] {
 /**
  * Get all active penalties from selected IDs.
  * Applies user's custom slot overrides if provided.
+ * Also filters out penalties whose ingredient is not selected, and slots = 0.
  */
 export function getActivePenalties(
     penaltyIds: string[],
     customSlots?: Record<string, number>,
+    selectedIngredients?: string[],
 ): Penalty[] {
-    return DEFAULT_PENALTIES.filter((p) => penaltyIds.includes(p.id)).map(
-        (p) => {
-            if (customSlots && customSlots[p.id] !== undefined) {
-                return { ...p, slots: customSlots[p.id] };
-            }
-            return p;
-        },
-    );
+    return DEFAULT_PENALTIES.filter((p) => {
+        // Must be selected
+        if (!penaltyIds.includes(p.id)) return false;
+        // Ingredient must be active (if penalty requires one)
+        if (
+            selectedIngredients &&
+            p.ingredient &&
+            !selectedIngredients.includes(p.ingredient)
+        )
+            return false;
+        // Effective slots must be > 0
+        const effectiveSlots = customSlots?.[p.id] ?? p.slots;
+        if (effectiveSlots <= 0) return false;
+        return true;
+    }).map((p) => {
+        if (customSlots && customSlots[p.id] !== undefined) {
+            return { ...p, slots: customSlots[p.id] };
+        }
+        return p;
+    });
 }
 
 /**

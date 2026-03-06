@@ -83,6 +83,15 @@ export interface PlayerStats {
     lastDate: string;
 }
 
+// Fate round outcome — set by fate page when wheel completes
+export interface FateContext {
+    destinyCard: FateType; // which card was drawn
+    originalVictimId: string; // the player who spun the fate wheel
+    targetId?: string; // the player selected by secondary wheel (co-victim / escape target / transfer)
+    newExecutionerId?: string; // set only if role-conflict was detected
+    conflictMessage?: string; // the toast message to display if conflict
+}
+
 // Game state stored in localStorage
 export interface GameState {
     members: Player[];
@@ -94,4 +103,6 @@ export interface GameState {
     currentPenalties: PenaltyResult[];
     sessions: GameSession[];
     secretMode: boolean;
+    fateWeights: Record<string, number>; // configurable fate probability weights
+    fateContext?: FateContext; // outcome from last fate wheel spin
 }
